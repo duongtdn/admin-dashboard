@@ -2,7 +2,7 @@
 
 import React, { Component } from 'react'
 
-import auth, { logout, authGet } from '@stormgle/auth-client'
+import auth, { loginByPassword, logout, authGet } from '@stormgle/auth-client'
 import { bindUserProvider  } from '@stormgle/react-user'
 import {server} from './env'
 
@@ -10,8 +10,8 @@ class LoginPopup extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      username: '',
-      password: ''
+      username: 'tester@team.com',
+      password: '123'
     }
 
     this.login = this.login.bind(this)
@@ -32,9 +32,17 @@ class LoginPopup extends Component {
 
           <div className="w3-container" style={{marginBottom: '32px'}} >
 
-            <p className="w3-text-dark-grey" style={{fontWeight: 'bold'}}>
-              Please enter <span className="w3-text-green">email</span> and <span className="w3-text-green">password</span>
-            </p>
+            {
+              this.props.err ?
+                <p className="w3-text-dark-grey" style={{fontWeight: 'bold'}}>
+                 Error <span className="w3-text-red">{this.props.err}</span>
+                </p>
+                :
+                <p className="w3-text-dark-grey" style={{fontWeight: 'bold'}}>
+                  Please enter <span className="w3-text-green">email</span> and <span className="w3-text-green">password</span>
+                </p>
+            }
+            
 
             <p>
               <label>Email</label>
@@ -89,7 +97,8 @@ class Header extends Component {
     super(props);
 
     this.state = {
-      showLogin: false
+      showLogin: false,
+      err: null
     }
 
     const methods = [
@@ -100,9 +109,6 @@ class Header extends Component {
   }
 
   componentWillReceiveProps(props) {
-    if (props.showLoginPanel) {      
-     this.login(props.showLoginPanel)
-    }
     if (typeof window !== 'undefined' && !this.props.user && props.user) {
       // user just logged in
       // this._updateUserServiceData(props.user)
@@ -121,7 +127,7 @@ class Header extends Component {
           (this.props.user)? 
             <div className="w3-bar-item w3-right w3-hide-small" style={{marginTop: '16px'}}> 
               <div className="w3-bar-item"> {this.props.user.fullName || this.props.user.username} </div>
-              <button className="w3-button w3-large w3-border w3-border-blue-grey w3-round" onClick={this.logout}> Logout </button>
+              <button className="w3-button w3-large w3-border w3-border-blue-grey w3-round" onClick={() => logout()}> Logout </button>
             </div>
           :
             <div className="w3-bar-item w3-right w3-hide-small" style={{marginTop: '16px'}}>               
@@ -136,6 +142,7 @@ class Header extends Component {
         <LoginPopup show = {this.state.showLogin} 
                     cancel = {() => this.setState({showLogin: false})}
                     login = {this.login}
+                    err = {this.state.err}
                     
         />
 
@@ -145,18 +152,21 @@ class Header extends Component {
 
   
   login({username, password}) {
-    console.log('login')
-    console.log(username + ' - ' + password)
-    this.setState({ showLogin: false })
-  }
-
-  logout() {
-    logout()
-  }
-
-  closeLogin() {
-    this.setState({ showLogin: false, showSidebar: false })
-    this.props.onLoginPanelClosed && this.props.onLoginPanelClosed();
+    const endPoint =  `${server.auth}/auth/admin_login`;
+    loginByPassword(
+      endPoint,
+      {username, password},
+      {
+        onSuccess: user => {
+          console.log(user);
+          this.setState({ showLogin: false, err: null })
+        },
+        onFailure: err => {
+          this.setState({ err })
+        }
+      }
+    )
+    
   }
 
  
