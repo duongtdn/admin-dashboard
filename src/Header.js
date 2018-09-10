@@ -4,11 +4,18 @@ import React, { Component } from 'react'
 
 import auth, { logout, authGet } from '@stormgle/auth-client'
 import { bindUserProvider  } from '@stormgle/react-user'
-// import LoginPanel from './popup/LoginPanel'
+import {server} from './env'
 
 class LoginPopup extends Component {
   constructor(props) {
     super(props)
+    this.state = {
+      username: '',
+      password: ''
+    }
+
+    this.login = this.login.bind(this)
+
   }
 
   render() {
@@ -31,17 +38,27 @@ class LoginPopup extends Component {
 
             <p>
               <label>Email</label>
-              <input type="text" className="w3-input w3-border" /> 
+              <input  type="text" className="w3-input w3-border" 
+                      value={this.state.username}
+                      onChange={e => this.updateUsername(e.target.value)}
+              /> 
             </p>
             <p>
               <label>Password</label>
-              <input type="password" className="w3-input w3-border" />
+              <input  type="password" className="w3-input w3-border" 
+                      value={this.state.password}
+                      onChange={e => this.updatePassword(e.target.value)}
+              />
             </p>
           </div>
 
           <footer>
             <div className="w3-container w3-border-top" style={{padding: '16px', textAlign:'center'}} >
-              <button className="w3-button w3-blue w3-hover-blue w3-large" style={{fontWeight: 'bold'}}> Login </button>
+              <button className="w3-button w3-blue w3-hover-blue w3-large" 
+                      style={{fontWeight: 'bold'}}
+                      onClick={this.login} > 
+                Login 
+              </button>
             </div>
           </footer>
 
@@ -49,6 +66,22 @@ class LoginPopup extends Component {
       </div>
     )
   }
+
+  updateUsername(username) {
+    this.setState({ username })
+  }
+
+  updatePassword(password) {
+    this.setState({ password })
+  }
+
+  login() {
+    this.props.login({
+      username: this.state.username,
+      password: this.state.password
+    })
+  }
+
 }
 
 class Header extends Component {
@@ -60,7 +93,7 @@ class Header extends Component {
     }
 
     const methods = [
-     
+     'login'
     ]
     methods.forEach( method => this[method] = this[method].bind(this) )
 
@@ -102,6 +135,7 @@ class Header extends Component {
 
         <LoginPopup show = {this.state.showLogin} 
                     cancel = {() => this.setState({showLogin: false})}
+                    login = {this.login}
                     
         />
 
@@ -110,9 +144,10 @@ class Header extends Component {
   }
 
   
-  login() {
+  login({username, password}) {
     console.log('login')
-    this.setState({ showLogin: true })
+    console.log(username + ' - ' + password)
+    this.setState({ showLogin: false })
   }
 
   logout() {
