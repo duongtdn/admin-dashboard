@@ -3,6 +3,8 @@
 import React, { Component } from 'react'
 import auth, { isLoggedUser, getUser, logout, authGet } from '@stormgle/auth-client'
 
+import App from './App'
+
 class AppData extends Component {
   constructor(props) {
     super(props)
@@ -10,9 +12,7 @@ class AppData extends Component {
 
   render() {
     return(
-      <div >
-        <h3>Dashboard</h3>
-      </div>
+     <App />
     )
   }
 }
