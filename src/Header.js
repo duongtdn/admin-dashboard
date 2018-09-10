@@ -18,6 +18,12 @@ class LoginPopup extends Component {
 
   }
 
+  componentWillReceiveProps(props) {
+    if (!props.show) {
+      this.setState({username: '', password: ''})
+    }
+  }
+
   render() {
     const display = this.props.show? 'block' : 'none'
     return(
