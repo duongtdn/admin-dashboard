@@ -1,10 +1,17 @@
 "use strict"
 
 import React, { Component } from 'react'
+import { authGet } from '@stormgle/auth-client'
+
+import { server } from './env'
 
 class EnrollmentManager extends Component {
   constructor(props) {
     super(props)
+  }
+
+  componentWillMount() {
+    this._getBillingInvoices()
   }
 
   render() {
@@ -33,6 +40,20 @@ class EnrollmentManager extends Component {
       </div>
     )
   }
+
+  _getBillingInvoices() {
+    authGet({
+      endPoint: `${server.dashboard}/billing`,
+      service: 'admin',
+      onSuccess: (data) => {
+        console.log(data)
+      },
+      onFailure: ({status, err}) => {
+        console.log(err)
+      }
+    })
+  }
+
 }
 
 module.exports = EnrollmentManager
