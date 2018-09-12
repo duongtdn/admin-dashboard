@@ -18,12 +18,6 @@ class Login extends Component {
 
   }
 
-  componentWillReceiveProps(props) {
-    if (!props.show) {
-      this.setState({username: '', password: '', err: null})
-    }
-  }
-
   render() {
     return(
       <div className="w3-container" style={{ marginTop: '32px' }}>
