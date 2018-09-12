@@ -1,26 +1,25 @@
 {
-  "name": "admin-dashboard",
+  "name": "dashboard-web",
   "version": "1.0.0",
-  "description": "dashboard for admin",
+  "description": "dashboard web client",
   "main": "src/index.js",
   "scripts": {
     "start": "webpack-dev-server --port 3900 --history-api-fallback --host 0.0.0.0 --watch-poll"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/duongtdn/admin-dashboard.git"
+    "url": "git+https://github.com/duongtdn/dashboard-web.git"
   },
   "author": "duongtdn",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/duongtdn/admin-dashboard/issues"
+    "url": "https://github.com/duongtdn/dashboard-web/issues"
   },
-  "homepage": "https://github.com/duongtdn/admin-dashboard#readme",
+  "homepage": "https://github.com/duongtdn/dashboard-web#readme",
   "dependencies": {
     "@stormgle/auth-client": "^1.1.0",
     "react": "^16.3.0",
-    "react-dom": "^16.3.0",
-    "@stormgle/react-user": "^1.0.0"
+    "react-dom": "^16.3.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
