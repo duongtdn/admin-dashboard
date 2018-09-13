@@ -27,10 +27,10 @@ class EnrollmentManager extends Component {
             <tbody>
               <tr>
                 <th>Order Number</th>
-                <th>User</th>
+                <th>Bill To</th>
                 <th>Courses</th>
                 <th>Status</th>
-                <th>Action</th>
+                <th style={{textAlign: 'center'}}>Action</th>
               </tr>
   
               {
@@ -54,7 +54,9 @@ class EnrollmentManager extends Component {
                         })
                       } </td>
                       <td> {invoice.status} </td>
-                      <td>Activate</td>
+                      <td style={{textAlign:'center'}}> 
+                        <button className="w3-button w3-hover-blue" onClick={() => this.activate(invoice)}> Activate </button>
+                      </td>
                     </tr>
                   )
                 })
@@ -103,6 +105,10 @@ class EnrollmentManager extends Component {
         this.setState({err})
       }
     })
+  }
+
+  activate(invoice) {
+    console.log(invoice)
   }
 
 }
