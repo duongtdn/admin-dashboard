@@ -7,7 +7,11 @@ import { server } from './env'
 
 class EnrollmentManager extends Component {
   constructor(props) {
-    super(props)
+    super(props);
+    this.state = {
+      invoices: null,
+      err: null
+    }
   }
 
   componentWillMount() {
@@ -15,30 +19,77 @@ class EnrollmentManager extends Component {
   }
 
   render() {
-    return(
-      <div className="w3-container">
-        
-        <table className="w3-table">
-          <tbody>
-            <tr>
-              <th>Order Number</th>
-              <th>User</th>
-              <th>Courses</th>
-              <th>Action</th>
-            </tr>
-
+    if (this.state.invoices) {
+      return(
+        <div className="w3-container">
           
-            <tr>
-              <td>180911</td>
-              <td>Awesome Tester</td>
-              <td>Emb01</td>
-              <td>Activate</td>
-            </tr>
-          </tbody>
+          <table className="w3-table w3-striped w3-bordered">
+            <tbody>
+              <tr>
+                <th>Order Number</th>
+                <th>User</th>
+                <th>Courses</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+  
+              {
+                this.state.invoices.map(invoice => {
+                  return (
+                    <tr key={invoice.number} >
+                      <td> {invoice.number} </td>
+                      <td> {invoice.billTo.fullName || 'N/A'} </td>
+                      <td> {
+                        invoice.items.map(item => {
+                          if (item.type === 'course') {
+                            return (
+                              <div key={item.code} >
+                                <label className="w3-text-grey">{item.code}</label> <br/>
+                                <span> {item.name} </span>
+                              </div>
+                            ) 
+                          } else {
+                            return null
+                          }
+                        })
+                      } </td>
+                      <td> {invoice.status} </td>
+                      <td>Activate</td>
+                    </tr>
+                  )
+                })
+              }
 
-        </table>
-      </div>
-    )
+            </tbody>
+  
+          </table>
+        </div>
+      )
+    } else {
+      return (
+        <div className="w3-container">
+          
+          <table className="w3-table">
+            <tbody>
+              <tr>
+                <th>Order Number</th>
+                <th>User</th>
+                <th>Courses</th>
+                <th>Action</th>
+              </tr>
+  
+  
+  
+              <tr>
+                <td>There is no new orders</td>
+              </tr>
+            </tbody>
+  
+          </table>
+        </div>
+      )
+    }
+    
   }
 
   _getBillingInvoices() {
@@ -46,10 +97,10 @@ class EnrollmentManager extends Component {
       endPoint: `${server.dashboard}/billing`,
       service: 'admin',
       onSuccess: (data) => {
-        console.log(data)
+        this.setState({ invoices: data })
       },
       onFailure: ({status, err}) => {
-        console.log(err)
+        this.setState({err})
       }
     })
   }
