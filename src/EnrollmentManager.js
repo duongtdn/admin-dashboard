@@ -1,7 +1,7 @@
 "use strict"
 
 import React, { Component } from 'react'
-import { authGet } from '@stormgle/auth-client'
+import { authGet, authPost } from '@stormgle/auth-client'
 
 import { server } from './env'
 
@@ -109,6 +109,31 @@ class EnrollmentManager extends Component {
 
   activate(invoice) {
     console.log(invoice)
+
+    const courses = [];
+    invoice.items.forEach(item => {
+      if (item.type === 'course') {
+        courses.push(item.code)
+      }
+    })
+    
+    authPost({
+      endPoint: `${server.dashboard}/activate`,
+      service: 'admin',
+      data: { 
+        invoice: {
+          number: invoice.number,
+          billTo: { uid: invoice.billTo.uid },
+          courses
+        }
+      },
+      onSuccess: (data) => {
+       console.log('ok')
+      },
+      onFailure: ({status, err}) => {
+       console.log(err)
+      }
+    })
   }
 
 }
