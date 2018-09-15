@@ -157,23 +157,8 @@ class EnrollmentManager extends Component {
       return (
         <div className="w3-container">
           
-          <table className="w3-table">
-            <tbody>
-              <tr>
-                <th>Order Number</th>
-                <th>User</th>
-                <th>Courses</th>
-                <th>Action</th>
-              </tr>
-  
-  
-  
-              <tr>
-                <td>There is no new orders</td>
-              </tr>
-            </tbody>
-  
-          </table>
+          <h3 style={{fontStyle: 'italic'}}> There is no new orders </h3>
+
         </div>
       )
     }
