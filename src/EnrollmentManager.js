@@ -10,7 +10,15 @@ import WaitingScreen from './WaitingScreen'
 class ConfirmPopup extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      comment: '',
+    }
+  }
 
+  componentWillReceiveProps(props) {
+    if (!props.show) {
+      this.setState({comment: ''})
+    }
   }
 
   render() {
@@ -33,15 +41,18 @@ class ConfirmPopup extends Component {
                 <p className="w3-large w3-text-orange" style={{fontWeight: 'bold'}}> 
                   Activate Enrollment
                 </p>
+
+                <p> 
+                  Order: <span style={{fontWeight: 'bold'}}> {this.props.invoice.number} </span> 
+                  /
+                  {this.props.invoice.billTo.fullName}
+                  /
+                  <span className="w3-text-red"> {localeString(this.props.invoice.subTotal)} {'\u20ab'}</span>
+                </p>
+
                 <hr />
 
-                <p> Order: <span style={{fontWeight: 'bold'}}> {this.props.invoice.number} </span> </p>
-                <p> BillTo: {this.props.invoice.billTo.fullName} </p>
-                <p> SubTotal: <span className="w3-text-red"> {localeString(this.props.invoice.subTotal)} {'\u20ab'}</span> </p>
-
-                <hr />
-
-                <p className="w3-large w3-text-blue-grey" style={{fontStyle: 'italic'}}> Courses will be activated </p>
+                <p className="w3-text-blue-grey" style={{fontStyle: 'italic'}}> Courses will be activated </p>
                 <ul className = "w3-ul"> 
                 {
                   this.props.invoice.items.map(item => {
@@ -57,6 +68,12 @@ class ConfirmPopup extends Component {
                   })
                 }
                 </ul>
+                
+                <hr />
+
+                <p className="w3-text-blue-grey" style={{fontWeight: 'bold'}}> Comment </p>
+                <textarea rows="3" style={{width: '100%'}} onChange={e => this.updateComment(e.target.value)}/>
+
               </div>
             
             : null  
@@ -67,13 +84,17 @@ class ConfirmPopup extends Component {
             <div className="w3-right" style={{marginBottom: '8px'}}>    
               <button className="w3-button w3-large" onClick={this.props.cancel} > Cancel </button> 
               <span> </span>                     
-              <button className="w3-button w3-blue w3-large" onClick={this.props.onConfirm} > Confirm </button>
+              <button className="w3-button w3-blue w3-large" onClick={() => this.props.onConfirm(this.state.comment)} > Confirm </button>
             </div>
           </footer>
 
         </div>
       </div>
     )
+  }
+
+  updateComment(comment) {
+    this.setState({comment})
   }
 }
 
@@ -87,6 +108,9 @@ class EnrollmentManager extends Component {
       currentInvoice: null,
       showWaitingScreen: false
     }
+
+    this.activate = this.activate.bind(this)
+
   }
 
   componentWillMount() {
@@ -128,9 +152,16 @@ class EnrollmentManager extends Component {
                           }
                         })
                       } </td>
-                      <td> {invoice.status} <br /> <span className="w3-text-red"> {localeString(invoice.subTotal)} {'\u20ab'} </span> </td>
+                      <td> 
+                        {invoice.status} 
+                        <br /> 
+                        {
+                          invoice.status === 'billing' ?
+                              <span className="w3-text-red"> {localeString(invoice.subTotal)} {'\u20ab'} </span>
+                              : null  
+                        } 
+                      </td>
                       <td style={{textAlign:'center'}}> 
-                        {/* <button className="w3-button w3-hover-blue" onClick={() => this.activate(invoice)}> Activate </button> */}
                         <button className="w3-button w3-hover-blue" onClick={() => this.openConfirmPopup(invoice)}> Activate </button>
                       </td>
                     </tr>
@@ -145,7 +176,7 @@ class EnrollmentManager extends Component {
           <ConfirmPopup show = {this.state.showConfirmPopup} 
                         invoice = {this.state.currentInvoice}
                         cancel =  {() => this.setState({currentInvoice: null, showConfirmPopup : false})}
-                        onConfirm = {() => this.activate()}
+                        onConfirm = {this.activate}
           />
 
           <WaitingScreen show = {this.state.showWaitingScreen}
@@ -182,7 +213,7 @@ class EnrollmentManager extends Component {
     })
   }
 
-  activate() {
+  activate(comment) {
 
     const invoice = this.state.currentInvoice;
 
@@ -202,12 +233,22 @@ class EnrollmentManager extends Component {
         invoice: {
           number: invoice.number,
           billTo: { uid: invoice.billTo.uid },
-          courses
+          courses,
+          comment
         }
       },
       onSuccess: (data) => {
-        console.log(data)
-        this.setState({ showConfirmPopup: false, currentInvoice: null, showWaitingScreen: false })
+        // update invoice status to paid
+        const invoice = {...this.state.currentInvoice};
+        invoice.status = 'paid'
+        const invoices = this.state.invoices.map( _inv => {
+          if (_inv.number === invoice.number) {
+            return invoice
+          } else {
+            return _inv
+          }
+        }) 
+        this.setState({ showConfirmPopup: false, currentInvoice: null, showWaitingScreen: false, invoices })
       },
       onFailure: ({status, err}) => {
        console.log(err)
