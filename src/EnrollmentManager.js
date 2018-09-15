@@ -4,6 +4,7 @@ import React, { Component } from 'react'
 import { authGet, authPost } from '@stormgle/auth-client'
 
 import { server } from './env'
+import { localeString } from './lib/util'
 
 class ConfirmPopup extends Component {
   constructor(props) {
@@ -29,26 +30,26 @@ class ConfirmPopup extends Component {
                 <p className="w3-text-grey" style={{fontStyle: 'italic'}}> Please confirm your below action: </p> 
                 
                 <p className="w3-large w3-text-orange" style={{fontWeight: 'bold'}}> 
-                  Action: Activate Enrollment
+                  Activate Enrollment
                 </p>
                 <hr />
 
-                <p> Order: {this.props.invoice.number} </p>
+                <p> Order: <span style={{fontWeight: 'bold'}}> {this.props.invoice.number} </span> </p>
                 <p> BillTo: {this.props.invoice.billTo.fullName} </p>
-                <p> SubTotal: {this.props.invoice.subTotal} </p>
+                <p> SubTotal: <span className="w3-text-red"> {localeString(this.props.invoice.subTotal)} {'\u20ab'}</span> </p>
 
                 <hr />
 
-                <p style={{fontWeight: 'bold'}}> Courses will be activated </p>
+                <p className="w3-large w3-text-blue-grey" style={{fontStyle: 'italic'}}> Courses will be activated </p>
                 <ul className = "w3-ul"> 
                 {
                   this.props.invoice.items.map(item => {
                     if (item.type === 'course') {
                       return (
-                        <li key={item.code}>
+                        <li key={item.code} style={{fontWeight: 'bold'}}>
                           <span className="w3-text-grey"> {item.code} </span>
                           <br />
-                          <span> {item.name} </span>
+                          <span > {item.name} </span>
                         </li>
                       )
                     }
@@ -125,7 +126,7 @@ class EnrollmentManager extends Component {
                           }
                         })
                       } </td>
-                      <td> {invoice.status} </td>
+                      <td> {invoice.status} <br /> <span className="w3-text-red"> {localeString(invoice.subTotal)} {'\u20ab'} </span> </td>
                       <td style={{textAlign:'center'}}> 
                         {/* <button className="w3-button w3-hover-blue" onClick={() => this.activate(invoice)}> Activate </button> */}
                         <button className="w3-button w3-hover-blue" onClick={() => this.openConfirmPopup(invoice)}> Activate </button>
