@@ -5,6 +5,7 @@ import { authGet, authPost } from '@stormgle/auth-client'
 
 import { server } from './env'
 import { localeString } from './lib/util'
+import WaitingScreen from './WaitingScreen'
 
 class ConfirmPopup extends Component {
   constructor(props) {
@@ -84,6 +85,7 @@ class EnrollmentManager extends Component {
       err: null,
       showConfirmPopup: false,
       currentInvoice: null,
+      showWaitingScreen: false
     }
   }
 
@@ -146,6 +148,9 @@ class EnrollmentManager extends Component {
                         onConfirm = {() => this.activate()}
           />
 
+          <WaitingScreen show = {this.state.showWaitingScreen}
+          />
+
         </div>
       )
     } else {
@@ -202,6 +207,8 @@ class EnrollmentManager extends Component {
         courses.push(item.code)
       }
     })
+
+    this.setState({ showWaitingScreen: true })
     
     authPost({
       endPoint: `${server.dashboard}/activate`,
@@ -214,7 +221,8 @@ class EnrollmentManager extends Component {
         }
       },
       onSuccess: (data) => {
-        this.setState({ showConfirmPopup: true, currentInvoice: null })
+        console.log(data)
+        this.setState({ showConfirmPopup: false, currentInvoice: null, showWaitingScreen: false })
       },
       onFailure: ({status, err}) => {
        console.log(err)
