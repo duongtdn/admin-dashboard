@@ -162,7 +162,12 @@ class EnrollmentManager extends Component {
                         } 
                       </td>
                       <td style={{textAlign:'center'}}> 
+                      {
+                        invoice.status === 'billing' ?
                         <button className="w3-button w3-hover-blue" onClick={() => this.openConfirmPopup(invoice)}> Activate </button>
+                        : null
+                      }
+                        
                       </td>
                     </tr>
                   )
