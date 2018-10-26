@@ -43,11 +43,11 @@ class ConfirmPopup extends Component {
                 </p>
 
                 <p> 
-                  Order: <span style={{fontWeight: 'bold'}}> {this.props.invoice.number} </span> 
-                  /
-                  {this.props.invoice.billTo.fullName}
+                  Order: 
+                  <span style={{fontWeight: 'bold'}}> {this.props.invoice.number} </span> 
                   /
                   <span className="w3-text-red"> {localeString(this.props.invoice.subTotal)} {'\u20ab'}</span>
+                  {' '} ({this.props.invoice.billTo.email})
                 </p>
 
                 <hr />
@@ -106,7 +106,8 @@ class EnrollmentManager extends Component {
       err: null,
       showConfirmPopup: false,
       currentInvoice: null,
-      showWaitingScreen: false
+      showWaitingScreen: false,
+      isLoading: true
     }
 
     this.activate = this.activate.bind(this)
@@ -118,6 +119,24 @@ class EnrollmentManager extends Component {
   }
 
   render() {
+    if (this.state.isLoading) {
+      return this._renderLoading()
+    } else {
+      return this._renderTable()
+    }
+  }
+
+  _renderLoading() {
+    return (
+      <div className="w3-container">
+          
+          <h3 style={{fontStyle: 'italic'}}> Loading... </h3>
+
+        </div>
+    )
+  }
+
+  _renderTable() {
     if (this.state.invoices) {
       return(
         <div className="w3-container">
@@ -210,12 +229,13 @@ class EnrollmentManager extends Component {
       endPoint: `${server.dashboard}/billing`,
       service: 'admin',
       onSuccess: (data) => {
-        this.setState({ invoices: data })
+        this.setState({ invoices: data, isLoading: false })
       },
       onFailure: ({status, err}) => {
-        this.setState({err})
+        this.setState({err, isLoading: false})
       }
     })
+    this.setState({ isLoading : true })
   }
 
   activate(comment) {
@@ -239,7 +259,7 @@ class EnrollmentManager extends Component {
           number: invoice.number,
           billTo: { uid: invoice.billTo.uid },
           courses,
-          comment
+          resolvedComment: comment
         }
       },
       onSuccess: (data) => {
