@@ -20,7 +20,7 @@ class Header extends Component {
           {/* render for medium and large device */}
   
           <div className="w3-bar-item w3-right w3-hide-small" style={{marginTop: '16px'}}> 
-            <div className="w3-bar-item"> {this.props.user.fullName || this.props.user.username} </div>
+            <div className="w3-bar-item"> {this.props.user.profile.displayName || this.props.user.username} </div>
             <button className="w3-button w3-large w3-border w3-border-blue-grey w3-round" onClick={() => this.logout()}> Logout </button>
           </div>
         
