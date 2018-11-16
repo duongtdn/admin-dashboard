@@ -156,7 +156,7 @@ class EnrollmentManager extends Component {
                   return (
                     <tr key={invoice.number} >
                       <td> {invoice.number} </td>
-                      <td> {invoice.billTo.fullName || 'N/A'} </td>
+                      <td> {invoice.billTo.email || 'N/A'} </td>
                       <td> {
                         invoice.items.map(item => {
                           if (item.type === 'course') {
@@ -245,7 +245,7 @@ class EnrollmentManager extends Component {
     const courses = [];
     invoice.items.forEach(item => {
       if (item.type === 'course') {
-        courses.push(item.code)
+        courses.push({ courseId: item.code, title: item.name })
       }
     })
 
@@ -257,7 +257,7 @@ class EnrollmentManager extends Component {
       data: { 
         invoice: {
           number: invoice.number,
-          billTo: { uid: invoice.billTo.uid },
+          billTo: { uid: invoice.billTo.uid, email: invoice.billTo.email },
           courses,
           resolvedComment: comment
         }
