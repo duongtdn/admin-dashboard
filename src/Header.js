@@ -12,6 +12,14 @@ class Header extends Component {
 
   render() {
     if (this.props.user) {
+      let displayName = 'Unknown';
+      if (this.props.user) {
+        if (this.props.user.profile && this.props.user.profile.displayName) {
+          displayName = this.props.user.profile.displayName
+        } else {
+          displayName = this.props.user.username
+        }
+      }
       return (
         <div className="w3-container w3-bar">
           <div className="w3-bar-item" > <h2> Dashboard </h2> </div>
@@ -20,7 +28,7 @@ class Header extends Component {
           {/* render for medium and large device */}
   
           <div className="w3-bar-item w3-right w3-hide-small" style={{marginTop: '16px'}}> 
-            <div className="w3-bar-item"> {this.props.user.profile.displayName || this.props.user.username} </div>
+            <div className="w3-bar-item"> {displayName} </div>
             <button className="w3-button w3-large w3-border w3-border-blue-grey w3-round" onClick={() => this.logout()}> Logout </button>
           </div>
         
